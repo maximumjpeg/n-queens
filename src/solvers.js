@@ -18,7 +18,7 @@
 window.findNRooksSolution = function (n) {
   var solution = undefined; //fixme
   var board = new Board({ n: n });
-  console.log('board before loops', board.rows());
+  // console.log('board before loops', board.rows());
   if (n === 1) {
     board.rows()[0][0] = 1;
   }
@@ -41,6 +41,7 @@ window.findNRooksSolution = function (n) {
 window.countNRooksSolutions = function (n) {
   // debugger;
   // var findCount = 0;
+  if (n === 0 || n === 1) { return 1; }
   var solutionCount = 0; //fixme
   var colArr = [];
   var board = new Board({ n: n });
@@ -75,7 +76,7 @@ window.countNRooksSolutions = function (n) {
   // var firstRow = 0;
   // var find = function () {
   //   // debugger;
-  //   console.log('findCount:', findCount);
+  //   // console.log('findCount:', findCount);
   //   var board = new Board({ n: n });
   //   var currentRow = 0;
   //   var colArr = [];
@@ -141,7 +142,7 @@ window.countNRooksSolutions = function (n) {
   // while (firstCol !== n - 1 || firstRow !== n - 1) {
   //   // debugger;
   //   console.log('need to restart find');
-  //   findCount++;
+  //   // findCount++;
   //   console.log('solution count', solutionCount);
 
 
@@ -149,13 +150,34 @@ window.countNRooksSolutions = function (n) {
   //   console.log('solution count', solutionCount);
   // }
   // console.log('firstRow', firstRow);
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  // if (n >= 4) {
+  //   return solutionCount << 1;
+  // }
   return solutionCount;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function (n) {
   var solution = undefined; //fixme
+  var board = new Board({ n: n });
+  // console.log('board before loops', board.rows());
+  if (n === 1) {
+    board.rows()[0][0] = 1;
+  }
+  for (var i = 0; i < board.rows().length; i++) {
+    for (var j = 0; j < board.rows()[i].length; j++) {
+      board.rows()[i][j] = 1;
+      // console.log('during', board.rows());
+      if (board.hasAnyQueensConflicts()) {
+        board.rows()[i][j] = 0;
+      }
+    }
+  }
+  solution = board.rows();
+  // console.log('final', JSON.stringify(solution));
+  // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  return solution;
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
@@ -163,8 +185,64 @@ window.findNQueensSolution = function (n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function (n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0; //fixme
+
+  if (n === 0 || n === 1) { return 1; }
+
+  //Keeps track of the # of valid solutions
+
+
+  //Helps identify valid solutions
+  //Equivalent to Math.pow(2,n) - 1
+  var done = (1 << n) - 1;
+
+  //Determines the positions in the first row
+  //that will be excluded from our search
+  //Also applies to the second row when N is
+  //odd and the first queen is in the middle
+  //Equivalent to Math.pow(2, Math.floor(n/2)) - 1
+  var excl = (1 << ((n / 2) ^ 0)) - 1;
+
+  //Checks all possible board configurations
+  //Added two parameters: ex1 will be used on
+  //the current row, ex2 is next in line
+  var innerRecurse = function (ld, col, rd, ex1, ex2) {
+
+    //All columns are occupied,
+    //so the solution must be complete
+    if (col === done) {
+      solutionCount++;
+      return;
+    }
+
+    //Gets a bit sequence with "1"s
+    //whereever there is an open "slot"
+    //ex1 filters out right half of row
+    var poss = ~(ld | rd | col | ex1) & done;
+
+    //Loops as long as there is a valid
+    //place to put another queen.
+    while (poss) {
+      var bit = poss & -poss;
+      poss = poss ^ bit;
+
+      //ex2 will become the next row's ex1
+      //All rows after that will have ex1 = 0
+      innerRecurse((ld | bit) >> 1, col | bit, (rd | bit) << 1, ex2, 0);
+
+      //After we are past the middle square in the
+      //first row, disable filter for second row
+      ex2 = 0;
+    }
+  };
+
+  //Second row filter active only for odd N
+  innerRecurse(0, 0, 0, excl, n % 2 ? excl : 0);
+
+  //Multiply count by 2
+
+
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  return solutionCount << 1;
 };
