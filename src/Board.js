@@ -125,7 +125,7 @@
     hasColConflictAt: function (colIndex) {
       var row = this.rows();
       var pieceCounter = 0;
-      for (var i = 0; i < row.length - 1; i++) {
+      for (var i = 0; i < row.length; i++) {
 
         if (row[i][colIndex] === 1) {
           pieceCounter++;
@@ -160,21 +160,11 @@
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function (majorDiagonalColumnIndexAtFirstRow) {
       var row = this.rows();
-      if ( majorDiagonalColumnIndexAtFirstRow === undefined || majorDiagonalColumnIndexAtFirstRow === row.length - 1 || majorDiagonalColumnIndexAtFirstRow === -1 * row.length + 1) {
-        return false;
-      }
-      var firstCol, firstRow;
-      if (majorDiagonalColumnIndexAtFirstRow === 0) {
-        firstCol = 0;
-        firstRow = 0;
-      } else if (majorDiagonalColumnIndexAtFirstRow > 0) {
-        firstCol = majorDiagonalColumnIndexAtFirstRow; // 1
-        firstRow = 0;
-      } else {
-        firstCol = 0;
-        firstRow = Math.abs(majorDiagonalColumnIndexAtFirstRow);
-        // firstRow = Number(firstRow);
-      }
+
+      var firstCol = 0;
+      var firstRow = 0;
+      if (majorDiagonalColumnIndexAtFirstRow > 0) { firstCol = majorDiagonalColumnIndexAtFirstRow; }
+      if (majorDiagonalColumnIndexAtFirstRow < 0) { firstRow = Math.abs(majorDiagonalColumnIndexAtFirstRow); }
       var pieceCounter = 0;
       // if (row[firstRow] === undefined) {
       //   return false;
@@ -183,9 +173,9 @@
       for (var i = 0; i < row.length - j; i++) {
         // console.log('test', row[firstRow][firstCol]);
         // console.log('iteration', i, 'is', row[firstRow]);
-        console.log('firstRow', firstRow);
-        console.log('firstCol', firstCol);
-        console.log('count', pieceCounter);
+        // console.log('firstRow', firstRow);
+        // console.log('firstCol', firstCol);
+        // console.log('count', pieceCounter);
         // console.log('');
         if (row[firstRow][firstCol] === 1) {
           pieceCounter++;
@@ -235,11 +225,62 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function (minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var row = this.rows();
+
+      var firstCol = 3;
+      var firstRow = 0;
+      if (minorDiagonalColumnIndexAtFirstRow > 3 ) { firstRow = (minorDiagonalColumnIndexAtFirstRow - 3); }
+      if (minorDiagonalColumnIndexAtFirstRow < 3 ) { firstCol = minorDiagonalColumnIndexAtFirstRow; }
+      var pieceCounter = 0;
+      // if (row[firstRow] === undefined) {
+      //   return false;
+      // }
+      var j = firstRow;
+      for (var i = 0; i < row.length - j; i++) {
+        // console.log('test', row[firstRow][firstCol]);
+        // console.log('iteration', i, 'is', row[firstRow]);
+        // console.log('firstRow', firstRow);
+        // console.log('firstCol', firstCol);
+        // console.log('count', pieceCounter);
+        // console.log('');
+        if (row[firstRow][firstCol] === 1) {
+          pieceCounter++;
+        }
+        firstRow++;
+        firstCol--;
+      }
+      return (pieceCounter > 1);
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function () {
+      var row = this.rows();
+      var test = false;
+      var firstCol = 3;
+      var firstRow = 0;
+
+      for (var i = 0; i < row.length - 1; i++) {
+        var start = this._getFirstRowColumnIndexForMinorDiagonalOn(firstRow, firstCol);
+        test = this.hasMinorDiagonalConflictAt(start);
+        // console.log('call - row = ', start);
+        if (test) {
+          // console.log('test');
+          return true;
+        }
+        firstCol--;
+      }
+      firstCol = 3;
+      for (var i = 0; i < row.length - 1; i++) {
+        var start = this._getFirstRowColumnIndexForMinorDiagonalOn(firstRow, firstCol);
+        test = this.hasMinorDiagonalConflictAt(start);
+        // console.log('call - row = ', start);
+        if (test) {
+          // console.log('test');
+          return true;
+        }
+        firstRow++;
+      }
+
       return false; // fixme
     }
 
