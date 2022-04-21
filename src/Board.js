@@ -125,7 +125,7 @@
     hasColConflictAt: function (colIndex) {
       var row = this.rows();
       var pieceCounter = 0;
-      for (var i = 0; i < row.length; i++) {
+      for (var i = 0; i < row.length - 1; i++) {
 
         if (row[i][colIndex] === 1) {
           pieceCounter++;
@@ -179,11 +179,13 @@
       // if (row[firstRow] === undefined) {
       //   return false;
       // }
-      for (var i = 0; i < row.length - 1 - firstRow; i++) {
+      var j = firstRow;
+      for (var i = 0; i < row.length - j; i++) {
         // console.log('test', row[firstRow][firstCol]);
         // console.log('iteration', i, 'is', row[firstRow]);
         console.log('firstRow', firstRow);
         console.log('firstCol', firstCol);
+        console.log('count', pieceCounter);
         // console.log('');
         if (row[firstRow][firstCol] === 1) {
           pieceCounter++;
@@ -204,7 +206,7 @@
       for (var i = 0; i < row.length - 1; i++) {
         var start = this._getFirstRowColumnIndexForMajorDiagonalOn(firstRow, firstCol);
         test = this.hasMajorDiagonalConflictAt(start);
-        console.log('call - row = ', start);
+        // console.log('call - row = ', start);
         if (test) {
           console.log('test');
           return true;
@@ -217,7 +219,7 @@
       for (var j = 0; j < row.length - 1; j++) {
         start = this._getFirstRowColumnIndexForMajorDiagonalOn(firstRow, firstCol);
         test = this.hasMajorDiagonalConflictAt(start);
-        console.log(start);
+        // console.log(start);
         if (test) {
           return true;
         }
